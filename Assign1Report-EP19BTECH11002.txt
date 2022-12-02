@@ -1,0 +1,31 @@
+# Program Design
+    - Program flow begins in the main() function, with reading N,K args from the inp.txt file
+    - A Shared Memory buffer is created using mmap (called using the create_shared_memory function). The references to these buffers are stored in the array parentBuffer. K processes have K buffers, each of size N/K.
+        - The buffers basically store true(1) or false(0) values of "perfection" of numbers. 
+        - i'th row, j'th column gives the number i*(N/K)+j
+    - Processes are alloctaed numbers in a straightforward manner. First processes gets the first N/K numbers, the second the next N/K numbers and so on. i'th process has numbers from i*N/K to (i+1)*N/K
+    - make_k_processes() function is called. This does the work of creating the child processes. 
+
+    - make_k_processes() loops to K, each iteration spawning a new process using fork(). Each process calls the process() function to find perfect numbers in the limits described above. 
+    - The second loop waits for these K processes and prints a message when they do.
+
+    - process() method first creates a fileName string from the process number. This is used to create a file for logging of each process into a separate file. 
+    - Then it loops over the N/K numbers allocated to the i'th process (going from i*N/K to (i+1)*N/K)
+    - At the j'th iteration, number in consideration is i*N/K + j. The is_perfect() function is called for this number to check if it is a perfect number.
+    - If the number is perfect, store 1 in buffer for it's location, otherwise store 0. Log the appropriate outcome in the log file of the process too.
+    - Close the file buffers and return to parent process.
+
+    - Once all processes return, in main(), the parentBuffer is looped over to give the overall summary of finding perfect numbers. 
+    - This is printed into the out.txt file as per the format mentioned in the pdf. 
+
+# Output Analysis
+    - The terminal shows the pid's of the child processes that exit
+    - out.txt file gives the overall summary. 
+        - To check which process gave the perfect number 'x', use the command : 'cat out.txt | grep x'. Note the P value at the start of the line. 
+        - To check the results of process 'x'. Run : 'cat out.txt | grep Px'. This will return the perfect numbers found by the x'th child process
+
+    - outx.txt files. (x ranging from 0 to K-1) gives the log files for each of the individual processes. 
+    - To find the perfect numbers made by x'th process, run : 'cat outx.txt | grep "is a Perfect Number"'
+
+# Cleanup 
+    - To clean up the directory between uses, simply run 'rm out*'
