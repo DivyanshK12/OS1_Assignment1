@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <sys/types.h>
 #include <sys/wait.h>
@@ -17,7 +18,6 @@ int main(void)
     FILE *f = fopen("inp.txt", "r");
     fscanf(f, "%d %d", &N, &K);
     fclose(f);
-    printf("N = %d, K = %d\n", N, K);
 
     int* parentBuffer[K];
     for(int i = 0; i < K; i++)
@@ -41,7 +41,11 @@ void make_k_processes(int N, int K, int** parentBuffer)
         pid_t pid = fork();
         if (pid == 0)
         {
-            // Create buffer here of size N/K, pass it to process
+            // char* filename = (char*)malloc(20 * sizeof(char));
+            // strcat(filename, "out");
+            // strcat(filename, '0' + i);
+            // strcat(filename, ".txt");
+            // printf("%s\n", filename);
             process(N, K, i, parentBuffer[i]);
             exit(0);
         }
@@ -55,7 +59,6 @@ void make_k_processes(int N, int K, int** parentBuffer)
 
 void process(int N, int K, int i, int* buffer)
 {
-    pid_t p = getpid();
     for (int x = 0; x < N / K; x++)
     {
         int num = (i * N / K) + x;
